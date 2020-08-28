@@ -1,0 +1,46 @@
+openapi: 3.0.0
+info:
+  title: nodeServer api
+  description: |
+    This is a node study server.    
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+
+servers:
+- url: http://localhost:3000/
+tags:
+- name: user
+  description: Operations about user  
+paths:
+  /user:
+    post:
+      tags:
+      - user
+      summary: Create user            
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        default:
+          description: successful operation
+  
+components:
+  schemas:    
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        
