@@ -29,6 +29,29 @@ paths:
       responses:
         default:
           description: successful operation
+  /user/login:
+    post:
+      tags:
+      - user
+      summary: user login
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                password:
+                  type: string
+              required:
+                - id
+                - password
+        required: true
+      responses:
+        default:
+          description: successful operation
+            
   
 components:
   schemas:    
@@ -43,4 +66,4 @@ components:
           type: string
         phone:
           type: string
-        
+  
