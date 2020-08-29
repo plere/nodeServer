@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Sequelize = require('sequelize');
 var models = require('../models');
+var passport = require('passport');
 
 /* GET users listing. */
 router.post('/', function(req, res, next) {
@@ -32,21 +33,11 @@ router.post('/', function(req, res, next) {
   });
 });
 
-router.post('/login', (req, res, next) => {
-  let id = req.body.id;
-  let password = req.body.password;
-  models.User.findOne({
-    where: {
-      id: id,
-      password: password
-    }
-  }).then(result => {
-    if(result == null) {
-      res.sendStatus(401);
-    } else {
-      res.send("login Success");
-    }
-  });
+router.post('/login', passport.authenticate('local', {session: false}), 
+  function(req, res) {    
+    if(req.user)
+      res.send("login success");
 });
 
 module.exports = router;
+
