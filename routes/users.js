@@ -33,11 +33,24 @@ router.post('/', function(req, res, next) {
   });
 });
 
-router.post('/login', passport.authenticate('local', {session: false}), 
+router.post('/login/local', passport.authenticate('local', {session: false}), 
   function(req, res) {    
     if(req.user)
       res.send("login success");
 });
+
+router.get('/kakao', function(req, res) {
+  res.render('login');
+});
+
+router.post('/login/kakao', passport.authenticate('kakao'));
+
+router.get('/kakao/oauth', passport.authenticate('kakao', {
+  successRedirect: '/',
+  session: false,
+  failureRedirect: '/user/kakao'
+})
+);
 
 module.exports = router;
 

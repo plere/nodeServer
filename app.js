@@ -13,10 +13,11 @@ var app = express();
 
 var passport = require('passport');
 var LocalStrategy = require('passport-local');
+var kakaoStrategy = require('passport-kakao').Strategy;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -43,6 +44,37 @@ passport.use(new LocalStrategy({
         return done(null, user);
       }
     });
+  }
+));
+
+passport.use('kakao', new kakaoStrategy({
+  clientID: '{REST_API_KEY}',  
+  callbackURL: 'http://localhost:3000/user/kakao/oauth'
+},
+  function(accessToken, refreshToken, profile, done) {        
+    let newId = "kakao:"+profile.id;
+    let email = profile._json.kakao_account.email;    
+
+    models.User.findOne({
+      where: {
+        id: newId
+      }
+    }).then(loginUser => {
+      if(loginUser != null)
+      {        
+        console.log(loginUser);
+        return done(null, loginUser);
+      }
+      else {
+        models.User.create({
+          id: newId,
+          email: email,
+          phone: profile.id //임시처리
+        }).then(user => {          
+          return done(null, user);
+        });
+      }
+    });    
   }
 ));
 

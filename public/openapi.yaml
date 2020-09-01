@@ -29,7 +29,7 @@ paths:
       responses:
         default:
           description: successful operation
-  /user/login:
+  /user/login/local:
     post:
       tags:
       - user
