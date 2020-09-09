@@ -11,9 +11,10 @@ var models = require('./models')
 
 var app = express();
 
-var passport = require('passport');
-var LocalStrategy = require('passport-local');
-var kakaoStrategy = require('passport-kakao').Strategy;
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const kakaoStrategy = require('passport-kakao').Strategy;
+const JWTStrategy = require('passport-jwt').Strategy;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -75,6 +76,31 @@ passport.use('kakao', new kakaoStrategy({
         });
       }
     });    
+  }
+));
+
+var JWTExtractor = function(req) {
+  let token = null;
+  if(req && req.cookies)
+    token = req.cookies['jwt'];
+  return token;
+};
+
+passport.use(new JWTStrategy({
+  jwtFromRequest : JWTExtractor,
+  secretOrKey: 'secret_key' //temp  
+},
+  function(jwtPayload, done) {
+    console.log(jwtPayload.id);
+    return models.User.findOne({
+      where: {
+        id: jwtPayload.id
+      }
+    }).then(user => {
+      return done(null, user);
+    }).catch(err => {
+      return done(err);
+    });
   }
 ));
 

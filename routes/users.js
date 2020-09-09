@@ -3,6 +3,7 @@ var router = express.Router();
 var Sequelize = require('sequelize');
 var models = require('../models');
 var passport = require('passport');
+const jwt = require('jsonwebtoken');
 
 /* GET users listing. */
 router.post('/', function(req, res, next) {
@@ -33,11 +34,17 @@ router.post('/', function(req, res, next) {
   });
 });
 
-router.post('/login/local', passport.authenticate('local', {session: false}), 
-  function(req, res) {    
-    if(req.user)
-      res.send("login success");
-});
+router.post('/login/local', passport.authenticate('local', {session: false}),
+  (req, res) => {
+    const token = jwt.sign({
+      id: req.user.id
+    },
+    'secret_key'
+    );
+    res.cookie('jwt', token);
+    return res.sendStatus(200);
+  }
+);
 
 router.get('/kakao', function(req, res) {
   res.render('login');
@@ -45,12 +52,22 @@ router.get('/kakao', function(req, res) {
 
 router.post('/login/kakao', passport.authenticate('kakao'));
 
-router.get('/kakao/oauth', passport.authenticate('kakao', {
-  successRedirect: '/',
+router.get('/kakao/oauth', passport.authenticate('kakao', {  
   session: false,
   failureRedirect: '/user/kakao'
-})
+}), (req, res) => {
+  const token = jwt.sign({
+    id: req.user.id
+  },
+  'secret_key'
+  );  
+  res.cookie('jwt', token);
+  return res.sendStatus(200);
+}
 );
 
-module.exports = router;
+router.get('/info', passport.authenticate('jwt', {session: false}), (req, res) => {
+  return res.json(req.user);
+});
 
+module.exports = router;

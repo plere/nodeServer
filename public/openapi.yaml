@@ -51,7 +51,22 @@ paths:
       responses:
         default:
           description: successful operation
-            
+  /user/info:
+    get:
+      tags:
+      - user
+      summary: get user info
+      parameters:
+      - name: id
+        in: query
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: string      
+      responses:
+        default:
+          description: successful operation
   
 components:
   schemas:    
